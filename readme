@@ -1,0 +1,84 @@
+# 📄 ATS Resume Checker
+
+A Streamlit app that scores your resume for Applicant Tracking System (ATS) compatibility and gives specific, prioritized suggestions to improve it. Powered by Google Gemini Flash.
+
+## Features
+- Upload a resume as **PDF, DOCX or TXT**
+- Overall **ATS score (0-100)** plus breakdown: keyword match, formatting, content quality, structure, readability
+- Strengths, weaknesses and **missing keywords**
+- **Prioritized improvements** (High / Medium / Low)
+- Before/after **bullet point rewrites**
+- Optional **job description** input for targeted keyword matching
+- Preview of the text an ATS would actually extract
+- Download the report as JSON
+
+## Run locally
+
+```bash
+git clone https://github.com/<your-username>/<your-repo>.git
+cd <your-repo>
+
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+
+pip install -r requirements.txt
+```
+
+Get a free API key from https://aistudio.google.com/apikey, then provide it in **one** of these ways:
+
+**Option A: secrets file (recommended)**
+Create `.streamlit/secrets.toml`:
+```toml
+GEMINI_API_KEY = "your-key-here"
+# Optional: force a specific model
+# GEMINI_MODEL = "gemini-2.5-flash"
+```
+
+**Option B: environment variable**
+```bash
+export GEMINI_API_KEY="your-key-here"     # Windows PowerShell: $env:GEMINI_API_KEY="your-key-here"
+```
+
+**Option C:** paste the key into the app's sidebar at runtime.
+
+Start the app:
+```bash
+streamlit run app.py
+```
+
+## Deploy on Streamlit Community Cloud
+1. Push this repo to GitHub (never commit your API key).
+2. Go to https://share.streamlit.io and sign in with GitHub.
+3. Click **Create app**, choose your repo, branch `main`, main file `app.py`.
+4. Open **Advanced settings → Secrets** and add:
+   ```toml
+   GEMINI_API_KEY = "your-key-here"
+   ```
+5. Click **Deploy**.
+
+## Project structure
+```
+.
+├── app.py             # Streamlit app + Gemini logic
+├── requirements.txt   # Python dependencies
+├── README.md
+└── .gitignore         # keeps secrets out of Git
+```
+
+## Notes and limitations
+- Scanned/image-only PDFs can't be read (ATS systems can't read them either). Use a text-based PDF or DOCX.
+- The score is an AI estimate, not the output of a real ATS. Treat it as guidance.
+- The app asks the Gemini API which Flash models your key can use and picks the newest, so retired model names won't break it. Set `GEMINI_MODEL` in secrets to force a specific model.
+- Resume content is sent to the Gemini API for analysis. Don't upload anything you aren't comfortable sharing.
+
+## Troubleshooting
+| Problem | Fix |
+|---|---|
+| "model ... is no longer available" (404) | Update to the latest `app.py`, or set `GEMINI_MODEL` (e.g. `gemini-3.8-flash`) in secrets |
+| "API key not valid" | Re-check the key in secrets / sidebar |
+| 429 / quota error | Free-tier rate limit reached; wait a minute and retry |
+| "Very little text could be extracted" | Resume is likely an image; export a text-based PDF/DOCX |
+| `ModuleNotFoundError` | Run `pip install -r requirements.txt` |
+
+## License
+MIT
